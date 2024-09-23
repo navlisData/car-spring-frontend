@@ -3,6 +3,6 @@ services:
     image: navlisdata/car-frontend:latest
     container_name: car-frontend
     ports:
-      - "8080:80"
+      - "5173:80"
     environment:
       VITE_BACKEND_HOST: "localhost"
