@@ -5,4 +5,4 @@ services:
     ports:
       - "5173:80"
     environment:
-      VITE_BACKEND_HOST: "http://localhost"
+      BACKEND_HOST: "http://localhost"
