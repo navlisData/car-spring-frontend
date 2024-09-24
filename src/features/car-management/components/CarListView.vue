@@ -41,7 +41,7 @@ export default defineComponent({
         { label: 'Create', icon: 'pi pi-fw pi-plus', command: () => this.createCar() },
         { separator: true },
         { label: 'Edit', icon: 'pi pi-fw pi-pen-to-square', command: () => this.editCar(this.selectedCar) },
-        { label: 'Delete', icon: 'pi pi-fw pi-trash', command: () => this.deleteCar(this.selectedCar) }
+        { label: 'Delete', icon: 'pi pi-fw pi-trash', command: () => this.deleteCar(this.selectedCar, false) }
       ]
     };
   },
@@ -65,7 +65,7 @@ export default defineComponent({
           }
           break;
         case CrudOperations.DELETE.value:
-          this.deleteCar(crudRequest.payload as Car);
+          this.deleteCar(crudRequest.payload as Car, true);
           break;
       }
     },
@@ -98,7 +98,15 @@ export default defineComponent({
       this.openDialog(crudRequest);
     },
 
-    async deleteCar(carToRemove: Car) {
+    async deleteCar(carToRemove: Car, alreadyDeletedInBackend: boolean) {
+      if(!alreadyDeletedInBackend) {
+        try {
+          await CarService.deleteCar(this.request.payload as Car);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
       this.cars = this.cars.filter(car => car.id !== carToRemove.id);
     },
 

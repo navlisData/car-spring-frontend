@@ -30,27 +30,25 @@ export default defineComponent({
     };
   },
 
-  mounted() {
-    if(this.request.payload !== null) {
-      this.brand = (this.request.payload as Car).brand;
-      this.model = (this.request.payload as Car).model;
-    } else {
-      this.brand = '';
-      this.model = '';
+  watch: {
+    request(value) {
+      if(value.payload !== null) {
+        this.brand = (value.payload as Car).brand;
+        this.model = (value.payload as Car).model;
+      } else {
+        this.brand = '';
+        this.model = '';
+      }
     }
   },
 
   computed: {
     getHeaderText(): string {
-      return `${CrudOperations[this.request.operation].dialogHeader} car`;
+      return CrudOperations[this.request.operation].dialogHeader;
     },
 
     getConfirmButtonLabel(): string {
       return CrudOperations[this.request.operation].label;
-    },
-
-    showDeleteButton(): boolean {
-      return this.request.operation !== CrudOperations.CREATE.value;
     },
 
     setTextFieldReadonly(): boolean {
@@ -106,7 +104,14 @@ export default defineComponent({
 
     async deleteCar(car: Car) {
       try {
+        const crudRequest: CrudRequest = {
+          operation: CrudOperations.DELETE.value,
+          payload: car
+        };
+
         this.request.payload = await CarService.deleteCar(car);
+        this.$emit('crud-action', crudRequest);
+        this.setDialogVisible(false);
       } catch (err) {
         console.error(err);
       }
@@ -138,7 +143,7 @@ export default defineComponent({
       <div class="flex justify-between mt-2">
         <div class="flex gap-2">
           <Button type="button" label="Cancel" severity="secondary" @click="setDialogVisible(false)"></Button>
-          <Button type="button" label="Delete" severity="danger" @click="deleteCar(request.payload as Car)" v-if="showDeleteButton"></Button>
+          <Button type="button" label="Delete" severity="danger" @click="deleteCar(request.payload as Car)" v-if="request.payload instanceof Car"></Button>
         </div>
 
         <Button type="button" @click="confirmAction" >{{getConfirmButtonLabel}}</Button>
