@@ -21,9 +21,7 @@ export default class CarService {
       creationDto: replacement
     };
 
-    const response = await api.post<Car | null>('/cars', {
-      carCheckMappingRequest: mappingRequest,
-    });
+    const response = await api.post<Car | null>('/cars', mappingRequest);
 
     return response.data;
   }
