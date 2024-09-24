@@ -6,8 +6,14 @@ import CarCreationDialog from "./CarCrudDialog.vue"
 import { defineComponent } from 'vue';
 import {CrudOperations, type CrudRequest} from "@/types/CrudOperation";
 import type {CarCreationDto} from "@/features/car-management/types/CarCreationDto";
+import type ContextMenu from "primevue/contextmenu";
 
 type SizeOption = 'small' | 'large' | undefined ;
+
+interface RowContextMenuEvent {
+  originalEvent: MouseEvent;
+  data: any;
+}
 
 export default defineComponent({
   name: 'CarListView',
@@ -116,9 +122,10 @@ export default defineComponent({
       });
     },
 
-    onRowContextMenu(event) {
-      this.$refs.cm.show(event.originalEvent);
-    },
+    onRowContextMenu(event: RowContextMenuEvent) {
+      const contextMenu = this.$refs.cm as InstanceType<typeof ContextMenu>;
+      contextMenu.show(event.originalEvent);
+    }
   }
 });
 
