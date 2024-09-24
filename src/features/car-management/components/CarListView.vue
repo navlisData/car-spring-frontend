@@ -2,8 +2,10 @@
 import type { Car } from "../types/Car";
 import CarService from "../services/CarService";
 
-import CarCreationDialog from "./CarCreationDialog.vue"
+import CarCreationDialog from "./CarCrudDialog.vue"
 import { defineComponent } from 'vue';
+import {CrudOperations, type CrudRequest} from "@/types/CrudOperation";
+import type {CarCreationDto} from "@/features/car-management/types/CarCreationDto";
 
 type SizeOption = 'small' | 'large' | undefined ;
 
@@ -15,6 +17,7 @@ export default defineComponent({
   
   data() {
     return {
+      crudRequest: null as CrudRequest | null,
       dialogVisibility: false,
 
       cars: [] as Car[],
@@ -25,6 +28,14 @@ export default defineComponent({
           { label: 'Small', value: 'small' as SizeOption },
           { label: 'Normal', value:  undefined as SizeOption },
           { label: 'Large', value: 'large' as SizeOption }
+      ],
+
+      selectedCar: null as Car | null,
+      menuModel: [
+        { label: 'Create', icon: 'pi pi-fw pi-plus', command: () => this.createCar() },
+        { separator: true },
+        { label: 'Edit', icon: 'pi pi-fw pi-search', command: () => this.editCar(this.selectedCar) },
+        { label: 'Delete', icon: 'pi pi-fw pi-trash', command: () => this.deleteCar(this.selectedCar) }
       ]
     };
   },
@@ -34,6 +45,25 @@ export default defineComponent({
   },
 
   methods: {
+    handleCrudOperations(crudRequest: CrudRequest) {
+      switch (crudRequest.operation) {
+        case CrudOperations.CREATE.value:
+          this.cars.push(crudRequest.payload as Car);
+          break;
+        case CrudOperations.UPDATE.value:
+          const car: Car | undefined = this.cars.find(car => car.id === (crudRequest.payload as Car).id);
+
+          if(car) {
+            (car as Car).brand = (crudRequest.payload as Car).brand;
+            (car as Car).model = (crudRequest.payload as Car).model;
+          }
+          break;
+        case CrudOperations.DELETE.value:
+          this.cars = this.cars.filter(car => car.id !== (crudRequest.payload as Car).id);
+          break;
+      }
+    },
+
     async fetchCars() {
       this.carsLoading = true;
       try {
@@ -44,6 +74,35 @@ export default defineComponent({
       } finally {
         this.carsLoading = false;
       }
+    },
+
+    createCar() {
+      const crudRequest = {
+        operation: CrudOperations.CREATE.value,
+        payload: null
+      };
+      this.openDialog(crudRequest);
+    },
+
+    editCar(carToEdit: Car) {
+      const crudRequest = {
+        operation: CrudOperations.UPDATE.value,
+        payload: carToEdit
+      };
+      this.openDialog(crudRequest);
+    },
+
+    async deleteCar(carToRemove: Car) {
+      const crudRequest = {
+        operation: CrudOperations.DELETE.value,
+        payload: carToRemove
+      };
+      this.openDialog(crudRequest);
+    },
+
+    openDialog(crudRequest: CrudRequest) {
+      this.crudRequest = crudRequest;
+      this.dialogVisibility = true;
     },
 
     formatIsoString(dateAsString: string) {
@@ -63,13 +122,13 @@ export default defineComponent({
 
 <template>
   <Toast />
-  <CarCreationDialog v-model="dialogVisibility" @newCarCreated="(car) => cars.push(car)" />
+  <CarCreationDialog v-if="crudRequest"  v-model="dialogVisibility" @crud-action="handleCrudOperations" :request="crudRequest"/>
 
   <div class="flex flex-col gap-3" >
     <h1 class="text-3xl mb-4">Cardealership - Spring demo</h1>
 
     <div class="flex gap-2">
-      <Button label="Create" icon="pi pi-plus" iconPos="right" @click="dialogVisibility = true" outlined />
+      <Button label="Create" icon="pi pi-plus" iconPos="right" @click="createCar" outlined />
       <Button label="Refresh" icon="pi pi-refresh" iconPos="right" @click="fetchCars" severity="secondary" outlined />
 
       <div class="ml-auto">
@@ -81,7 +140,8 @@ export default defineComponent({
       <ProgressSpinner v-if="carsLoading"/>
     </div>
 
-    <DataTable :size="size.value" stripedRows :value="cars" tableStyle="min-width: 50rem">
+    <ContextMenu ref="cm" :model="menuModel" @hide="selectedCar = null" />
+    <DataTable :size="size.value" stripedRows :value="cars" v-model:contextMenuSelection="selectedCar" tableStyle="min-width: 50rem">
       <template class="flex" #empty>No cars found</template>
       <Column field="brand" header="Brand"></Column>
       <Column field="model" header="Model"></Column>

@@ -16,6 +16,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
+import ContextMenu from 'primevue/contextmenu';
 
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -39,5 +40,6 @@ app.component('Dialog', Dialog);
 app.component('InputText', InputText);
 app.component('InputGroup', InputGroup);
 app.component('InputGroupAddon', InputGroupAddon);
+app.component('ContextMenu', ContextMenu);
 
 app.mount('#app');
