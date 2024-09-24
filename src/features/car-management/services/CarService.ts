@@ -17,8 +17,8 @@ export default class CarService {
 
   static async replaceCar(toReplace: Car, replacement: CarCreationDto): Promise<Car | null> {
     const mappingRequest: CarMappingRequest = {
-      carToReplaceId: toReplace.id,
-      replacement: replacement
+      idOfOldCar: toReplace.id,
+      creationDto: replacement
     };
 
     const response = await api.post<Car | null>('/cars', {
