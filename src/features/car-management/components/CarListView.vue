@@ -114,7 +114,11 @@ export default defineComponent({
         hour: '2-digit',
         minute: '2-digit',
       });
-    }
+    },
+
+    onRowContextMenu(event) {
+      this.$refs.cm.show(event.originalEvent);
+    },
   }
 });
 
@@ -141,7 +145,7 @@ export default defineComponent({
     </div>
 
     <ContextMenu ref="cm" :model="menuModel" @hide="selectedCar = null" />
-    <DataTable :size="size.value" stripedRows :value="cars" v-model:contextMenuSelection="selectedCar" tableStyle="min-width: 50rem">
+    <DataTable :size="size.value" stripedRows :value="cars" v-model:contextMenuSelection="selectedCar" @rowContextmenu="onRowContextMenu"  tableStyle="min-width: 50rem">
       <template class="flex" #empty>No cars found</template>
       <Column field="brand" header="Brand"></Column>
       <Column field="model" header="Model"></Column>
