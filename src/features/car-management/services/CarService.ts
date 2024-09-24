@@ -22,7 +22,7 @@ export default class CarService {
     };
 
     const response = await api.post<Car | null>('/cars', {
-      carCheckMappingRequest: JSON.stringify(mappingRequest),
+      carCheckMappingRequest: mappingRequest,
     });
 
     return response.data;
