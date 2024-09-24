@@ -101,7 +101,7 @@ export default defineComponent({
     async deleteCar(carToRemove: Car, alreadyDeletedInBackend: boolean) {
       if(!alreadyDeletedInBackend) {
         try {
-          await CarService.deleteCar(this.request.payload as Car);
+          await CarService.deleteCar(carToRemove);
         } catch (err) {
           console.error(err);
         }

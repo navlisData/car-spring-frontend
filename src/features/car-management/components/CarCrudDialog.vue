@@ -143,7 +143,7 @@ export default defineComponent({
       <div class="flex justify-between mt-2">
         <div class="flex gap-2">
           <Button type="button" label="Cancel" severity="secondary" @click="setDialogVisible(false)"></Button>
-          <Button type="button" label="Delete" severity="danger" @click="deleteCar(request.payload as Car)" v-if="request.payload instanceof Car"></Button>
+          <Button type="button" label="Delete" severity="danger" @click="deleteCar(request.payload as Car)" v-if="request.payload"></Button>
         </div>
 
         <Button type="button" @click="confirmAction" >{{getConfirmButtonLabel}}</Button>
