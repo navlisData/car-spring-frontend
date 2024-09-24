@@ -2,6 +2,6 @@ import type {CarCreationDto} from "@/features/car-management/types/CarCreationDt
 
 
 export interface CarMappingRequest {
-  carToReplaceId: number;
-  replacement: CarCreationDto;
+  idOfOldCar: number;
+  creationDto: CarCreationDto;
 }

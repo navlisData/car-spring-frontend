@@ -34,12 +34,15 @@ export default defineComponent({
     if(this.request.payload !== null) {
       this.brand = (this.request.payload as Car).brand;
       this.model = (this.request.payload as Car).model;
+    } else {
+      this.brand = '';
+      this.model = '';
     }
   },
 
   computed: {
     getHeaderText(): string {
-      return `${CrudOperations[this.request.operation].label} car`;
+      return `${CrudOperations[this.request.operation].dialogHeader} car`;
     },
 
     getConfirmButtonLabel(): string {
@@ -90,6 +93,7 @@ export default defineComponent({
               this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Successfully deleted car', life: 3000 });
               break;
           }
+          this.$emit('crud-action', this.request);
         } catch (err) {
           // TODO:
           this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Operation failed', life: 3000 });
